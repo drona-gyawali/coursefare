@@ -7,13 +7,15 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "lint": "eslint . --ext .js,.mjs,.cjs",
-    "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix"
+    "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
+    "worker":"node backend/worker/global.worker.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.63.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

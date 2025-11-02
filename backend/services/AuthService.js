@@ -1,6 +1,8 @@
 import { ZodError } from "zod";
 import { userRepo } from "../repository/UserRepository.js";
 import { UserSchema, LoginSchema } from "./validator.js";
+import WorkerService from "./WorkerService.js";
+import { loginTemplate } from "../templates/login.templates.js";
 import {
   createJwtToken,
   setCookie,
@@ -43,6 +45,12 @@ class AuthService {
       setCookie(req, res, access_token, false);
       setCookie(req, res, refresh_token, true);
       const tokens = { access_token: access_token, refresh_token: refresh_token };
+      const emailQueue = WorkerService.getEmailQueue();
+      await emailQueue.add("SendEmail", {
+        to: validEmail,
+        subject: "Login Successfully",
+        template: loginTemplate(validEmail.split("@")[0]),
+      });
       return tokens;
     } catch (error) {
       if (error instanceof ZodError) {

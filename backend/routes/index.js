@@ -10,4 +10,5 @@ router.use("/user", userRouter);
 router.use("/admin", Usermiddleware, Adminmiddleware, adminRouter);
 router.use("/course", Usermiddleware, courseRouter);
 router.use("/payments", Usermiddleware, paymentRouter);
+
 export default router;

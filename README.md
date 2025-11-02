@@ -24,7 +24,7 @@ This is a **Course Selling Backend** application built with Node.js and Express.
 - Authentication and authorization with JWT.
 - Payment processing for course purchases.
 - Redis caching enabled for optimized performance.
-
+- Email notification processing via background jobs with bullmq + redis
 ---
 
 ### Install Packages
@@ -45,6 +45,12 @@ npm install
  `
  npm run lint:fix 
  `
+
+ ### Run worker 
+ `
+ npm run worker
+ `
+ 
 ---
 
 >> Note: Before running the server make sure to configure mongodb and redis through .env file

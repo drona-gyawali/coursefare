@@ -1,4 +1,4 @@
-import { env } from "../core/conf";
+import { env } from "../core/conf.js";
 import nodemailer from "nodemailer";
 
 // TODO: need to define workers for this
@@ -23,12 +23,14 @@ class EmailService {
 
   async SendEmail(to, subject, template) {
     try {
-      return await this.transporter.sendMail({
+      const mail = await this.transporter.sendMail({
         from: env.getEmail(),
         to: to,
         subject: subject,
         html: template,
       });
+      console.log(nodemailer.getTestMessageUrl(mail));
+      return mail;
     } catch (error) {
       console.log("Error sending email:", error);
       throw error;

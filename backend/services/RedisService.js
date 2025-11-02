@@ -8,7 +8,10 @@ class RedisService {
     if (RedisService.instance) {
       return RedisService.instance;
     }
-    this.redis = new Redis(env.getRedisUrl());
+    this.redis = new Redis(env.getRedisUrl(), {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: true,
+    });
     this.ready = new Promise((resolve, reject) => {
       this.redis.once("ready", () => {
         console.log("Redis client connection established");
