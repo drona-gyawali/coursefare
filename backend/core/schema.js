@@ -57,7 +57,54 @@ const CourseSchema = new Schema(
 
     creator: {
       type: objectID,
+      ref: "User",
       required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const CourseContentSchema = new Schema(
+  {
+    courseId: {
+      type: objectID,
+      ref: "Course",
+      required: true,
+    },
+
+    section: {
+      type: String,
+      required: true,
+    },
+
+    title: {
+      type: String,
+      required: true,
+    },
+
+    contentType: {
+      type: String,
+      enum: ["pdf", "video", "quiz", "assigment"],
+    },
+
+    fileUrl: {
+      type: String,
+    },
+
+    description: {
+      type: String,
+    },
+
+    order: {
+      type: Number,
+      default: 1,
+    },
+
+    isPreview: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -69,11 +116,13 @@ const PurchaseSchema = new Schema(
   {
     userId: {
       type: objectID,
+      ref: "User",
       required: true,
     },
 
     courseId: {
       type: objectID,
+      ref: "Course",
       required: true,
     },
   },
@@ -86,11 +135,13 @@ const PaymentSchema = new Schema(
   {
     userId: {
       type: objectID,
+      ref: "User",
       required: true,
     },
 
     courseId: {
       type: objectID,
+      ref: "Course",
       required: true,
     },
 
@@ -134,5 +185,6 @@ const PaymentSchema = new Schema(
 
 export const User = mongoose.model("User", UserSchema);
 export const Course = mongoose.model("Course", CourseSchema);
+export const CourseContent = mongoose.model("CourseContent", CourseContentSchema);
 export const Purchase = mongoose.model("Purchase", PurchaseSchema);
 export const Payment = mongoose.model("Payment", PaymentSchema);

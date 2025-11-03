@@ -46,6 +46,7 @@ class PurchaseRepo {
     }
   }
 
+  // TODO:fix bug :: every one can see that purchased course of any user
   async getPurchasedCoursebyUser(userId, page, limit) {
     try {
       if (limit > 100) {

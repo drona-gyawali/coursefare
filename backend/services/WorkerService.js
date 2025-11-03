@@ -3,9 +3,14 @@ import EmailService from "./EmailService.js";
 import RedisService from "./RedisService.js";
 
 class WorkerService {
+  static instance;
   constructor() {
+    if (WorkerService.instance) {
+      return WorkerService.instance;
+    }
     this.connection = RedisService.getConection();
     this.emailQueue = new Queue("email-queue", { connection: this.connection });
+    WorkerService.instance = this;
   }
 
   getEmailQueue() {

@@ -5,10 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "lint": "eslint . --ext .js,.mjs,.cjs",
     "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
-    "worker":"node backend/worker/global.worker.js"
+    "worker": "node backend/worker/global.worker.js"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +38,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.4.0",
     "jest": "^30.2.0",
+    "nodemon": "^3.1.10",
     "prettier": "^3.6.2"
   }
 }

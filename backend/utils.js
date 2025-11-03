@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { env } from "./core/conf.js";
 import RedisService from "./services/RedisService.js";
 import { initDb } from "./core/database.js";
+import { courseRepo } from "./repository/CourseRepository.js";
 
 export function generateRandomString() {
   return Math.random().toString(36).substring(2, 6);
@@ -84,5 +85,25 @@ export async function starter() {
     await Promise.all([initDb.ConnectDb(), RedisService.ready]);
   } catch (error) {
     console.log("Error on the initital services", error);
+  }
+}
+
+export function truncateWords(text, wordLimit = 50) {
+  if (!text) return "";
+  const words = text.split(/\s+/);
+  if (words.length <= wordLimit) return text;
+  return words.slice(0, wordLimit).join(" ") + "...";
+}
+
+export async function CourseContentOwnerShip(userId, courseId) {
+  try {
+    const verifiedOwner = await courseRepo.getCoursebyId(courseId);
+    if (!verifiedOwner.creator === userId.toString()) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
   }
 }

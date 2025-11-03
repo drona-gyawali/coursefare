@@ -3,6 +3,7 @@ import { userRepo } from "../repository/UserRepository.js";
 import { UserSchema, LoginSchema } from "./validator.js";
 import WorkerService from "./WorkerService.js";
 import { loginTemplate } from "../templates/login.templates.js";
+import { signupTemplate } from "../templates/signup.template.js";
 import {
   createJwtToken,
   setCookie,
@@ -23,6 +24,12 @@ class AuthService {
       if (repo) return { success: false, message: "user already exists" };
       const hashedPassword = await hashPassword(validPassword);
       const newUser = await userRepo.createUser(validEmail, hashedPassword, validRole);
+      const emailqueue = WorkerService.getEmailQueue();
+      await emailqueue.add("SendEmail", {
+        to: validEmail,
+        subject: "Coursefare: Singup Successfull",
+        template: signupTemplate(validEmail.split("@")[0]),
+      });
       return { success: true, data: newUser };
     } catch (error) {
       if (error instanceof ZodError) {

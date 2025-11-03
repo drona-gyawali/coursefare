@@ -45,13 +45,7 @@ router.post("/profile", Usermiddleware, async (req, res) => {
 router.get("/courses", async (req, res) => {
   try {
     const { limit = "10", page = "1" } = req.query;
-    const userId = req.user.userId;
-
-    const getCourses = await courseService.getAllCourse(
-      userId.toString(),
-      parseInt(limit),
-      parseInt(page),
-    );
+    const getCourses = await courseService.getAllCourseGlobal(parseInt(limit), parseInt(page));
     if (!getCourses) {
       return res.status(400).json({ status: 400, error: getCourses });
     }

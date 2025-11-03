@@ -34,3 +34,13 @@ export const PaymentSchema = z.object({
   currency: z.string().default("NPR"),
   amount: z.number().positive("Amount must be positive"),
 });
+
+export const CourseContentSchema = z.object({
+  courseId: z.string().min(1, "courseId is required"),
+  section: z.string().min(1, "Section must be added e.g. intro, advanced"),
+  title: z.string().min(1).max(100, "title should be short"),
+  contentType: z.string().min(1).max(100, "title should be short"),
+  fileUrl: z.string().min(1).max(100, "title should be short"),
+  description: z.string().min(1).max(100, "title should be short"),
+  isPreview: z.boolean().default(false),
+});
