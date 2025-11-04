@@ -25,6 +25,8 @@ This is a **Course Selling Backend** application built with Node.js and Express.
 - Payment processing for course purchases.
 - Redis caching enabled for optimized performance.
 - Email notification processing via background jobs with bullmq + redis
+- Ratelimiter to protect against resource starvation
+- Caching to make Apis response blazing fast
 ---
 
 ### Install Packages

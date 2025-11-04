@@ -16,8 +16,8 @@ class CourseContentRepo {
     isPreview,
   ) {
     try {
-      const lastContent = await CourseContent.find({ courseId, section })
-        .sort({ order: -1 })
+      const lastContent = await CourseContent.find({ courseId: courseId })
+        .sort({ _id: -1 })
         .limit(1);
       const nextOrder = lastContent.length ? lastContent[0].order + 1 : 1;
       const courseCreated = this.model({
@@ -34,7 +34,7 @@ class CourseContentRepo {
       return courseCreated;
     } catch (error) {
       console.log(error);
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -75,7 +75,7 @@ class CourseContentRepo {
 
   async deleteCourseContent(courseId) {
     try {
-      const deletedCourse = await CourseContent.findOneAndDelete({ courseId: courseId });
+      const deletedCourse = await CourseContent.deleteMany({ courseId: courseId });
       if (!deletedCourse) throw new Error("Course not found");
       await RedisService.delCache(`courseContent:${courseId}*`);
       return { message: "Course deleted successfully", deletedCourse };

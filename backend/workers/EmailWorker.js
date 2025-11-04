@@ -1,25 +1,22 @@
 import { Worker, Queue } from "bullmq";
-import EmailService from "./EmailService.js";
-import RedisService from "./RedisService.js";
+import EmailService from "../services/EmailService.js";
+import RedisService from "../services/RedisService.js";
 
-class WorkerService {
+class EmailWorker {
   static instance;
   constructor() {
-    if (WorkerService.instance) {
+    if (EmailWorker.instance) {
       return WorkerService.instance;
     }
     this.connection = RedisService.getConection();
-    this.emailQueue = new Queue("email-queue", { connection: this.connection });
-    WorkerService.instance = this;
+    this.queueName = "email-queue";
+    this.emailQueue = new Queue(this.queueName, { connection: this.connection });
+    EmailWorker.instance = this;
   }
 
-  getEmailQueue() {
-    return this.emailQueue;
-  }
-
-  startEmailWorker() {
+  start() {
     const worker = new Worker(
-      "email-queue",
+      this.queueName,
       async (job) => {
         await EmailService.SendEmail(job.data.to, job.data.subject, job.data.template);
       },
@@ -36,4 +33,4 @@ class WorkerService {
   }
 }
 
-export default new WorkerService();
+export default new EmailWorker();

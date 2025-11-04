@@ -37,12 +37,13 @@ class ContentService {
       );
 
       if (!contentCreated) return { success: false, message: "Course content creation failed" };
+      await RedisService.delCache(`courseContent:${courseId}*`);
       return { success: true, data: contentCreated };
     } catch (error) {
       if (error instanceof ZodError) {
-        return { success: false, message: error.errors };
+        return { success: false, message: JSON.stringify(error) };
       }
-      return { success: false, message: error.message || error };
+      return { success: false, message: error?.message || JSON.stringify(error) };
     }
   }
 
@@ -72,23 +73,30 @@ class ContentService {
     try {
       const userId = req.user.userId;
       const key = `courseContent:${courseId}-${userId}`;
-
       const cached = await RedisService.getCache(key);
       if (cached) return { ...cached, cached: true };
-
       const fetchCourse = await courseContentRepo.getCourseContent(courseId, page, limit);
 
       if (!fetchCourse || !fetchCourse.course || fetchCourse.course.length === 0) {
         return { success: false, message: "Course content not found" };
       }
 
-      const requiresPayment = fetchCourse.course.every((content) => !content.isPreview);
-      if (requiresPayment) {
-        const isPaid = await paymentRepo.hasUserPaidForCourse(userId, courseId);
-        if (!isPaid) return { success: false, message: "Premium course access denied" };
-      }
+      const filteredCourse = await Promise.all(
+        fetchCourse.course.map(async (content) => {
+          if (!content.isPreview) {
+            const hasPaid = await paymentRepo.hasUserPaidForCourse(userId, courseId);
+            if (!hasPaid) {
+              return { ...content.toObject(), locked: true };
+            }
+          }
+          return content;
+        }),
+      );
+
+      fetchCourse.course = filteredCourse;
 
       await RedisService.setCache(key, fetchCourse);
+
       return fetchCourse;
     } catch (error) {
       return { success: false, message: error.message || error };

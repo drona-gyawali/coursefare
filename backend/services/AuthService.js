@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import { userRepo } from "../repository/UserRepository.js";
 import { UserSchema, LoginSchema } from "./validator.js";
-import WorkerService from "./WorkerService.js";
+import WorkerService from "../WorkerService.js";
 import { loginTemplate } from "../templates/login.templates.js";
 import { signupTemplate } from "../templates/signup.template.js";
 import {
@@ -24,8 +24,8 @@ class AuthService {
       if (repo) return { success: false, message: "user already exists" };
       const hashedPassword = await hashPassword(validPassword);
       const newUser = await userRepo.createUser(validEmail, hashedPassword, validRole);
-      const emailqueue = WorkerService.getEmailQueue();
-      await emailqueue.add("SendEmail", {
+      const { emailQueue } = WorkerService.getQueues();
+      await emailQueue.add("SendEmail", {
         to: validEmail,
         subject: "Coursefare: Singup Successfull",
         template: signupTemplate(validEmail.split("@")[0]),
@@ -52,7 +52,7 @@ class AuthService {
       setCookie(req, res, access_token, false);
       setCookie(req, res, refresh_token, true);
       const tokens = { access_token: access_token, refresh_token: refresh_token };
-      const emailQueue = WorkerService.getEmailQueue();
+      const { emailQueue } = WorkerService.getQueues();
       await emailQueue.add("SendEmail", {
         to: validEmail,
         subject: "Login Successfully",

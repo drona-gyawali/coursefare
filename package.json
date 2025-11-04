@@ -10,7 +10,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "lint": "eslint . --ext .js,.mjs,.cjs",
     "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
-    "worker": "node backend/worker/global.worker.js"
+    "worker": "node backend/core/worker.js"
   },
   "keywords": [],
   "author": "",

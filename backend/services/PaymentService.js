@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import { env } from "../core/conf.js";
 import { PaymentSchema } from "./validator.js";
 import { ZodError } from "zod";
-import WorkerService from "./WorkerService.js";
+import WorkerService from "../WorkerService.js";
 import { userRepo } from "../repository/UserRepository.js";
 import { courseRepo } from "../repository/CourseRepository.js";
 import { paymentSuccessTemplate } from "../templates/paymentSucess.template.js";
@@ -73,7 +73,7 @@ class StripeService {
         }
         const user = await userRepo.getUserbyId(updatedPayment.userId);
         const course = await courseRepo.getCoursebyId(updatedPayment.courseId);
-        const emailQueue = WorkerService.getEmailQueue();
+        const { emailQueue } = WorkerService.getQueues();
         await emailQueue.add("SendEmail", {
           to: user.email,
           subject: "Coursefare: Payment Successful",

@@ -90,9 +90,10 @@ router.post("/create/course/content/:courseId", async (req, res) => {
       isPreview,
     );
     if (!courseCreated.success) {
-      return res
-        .status(400)
-        .json({ status: 400, error: `Error while creating | ${courseCreated.message}` });
+      return res.status(400).json({
+        status: 400,
+        error: courseCreated.message,
+      });
     }
     return res.status(201).json({ status: 201, data: courseCreated });
   } catch (error) {
@@ -127,7 +128,7 @@ router.delete("/course/content/:courseId", async (req, res) => {
     }
     const deletedCourse = await courseContentRepo.deleteCourseContent(courseId.toString());
     if (!deletedCourse) {
-      return res.status(400).json({ status: 400, error: "Error while deleting " });
+      return res.status(400).json({ status: 400, error: deletedCourse.message });
     }
     return res.status(204).json({ status: 204, data: "No Content found" });
   } catch (error) {
