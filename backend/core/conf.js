@@ -42,6 +42,26 @@ class EnvLoad {
   getemailhost() {
     return process.env.BREVO_HOST;
   }
+
+  getAccessKeyBucket() {
+    return process.env.STORJ_ACCESS_KEY_ID;
+  }
+
+  getSecretAcessBucket() {
+    return process.env.STORJ_SECRET_ACCESS_KEY;
+  }
+
+  getEndpointBucket() {
+    return process.env.STORJ_ENDPOINT;
+  }
+
+  getBucketName() {
+    return process.env.STORJ_BUCKET_NAME;
+  }
+
+  getObejctEndpointBucket() {
+    return process.env.STORJ_BUCKET_OBJECT_URL;
+  }
 }
 
 export const env = new EnvLoad();

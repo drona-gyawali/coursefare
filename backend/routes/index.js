@@ -7,10 +7,10 @@ import paymentRouter from "../controller/PaymentController.js";
 import RateLimiterMiddleware from "../middleware/RateLimiterMiddleware.js";
 
 const router = Router();
-const RateLimit = RateLimiterMiddleware.rateLimiterUser
+const RateLimit = RateLimiterMiddleware.rateLimiterUser;
 
 router.use("/user", userRouter);
-router.use("/admin", Usermiddleware, Adminmiddleware, RateLimit , adminRouter);
+router.use("/admin", Usermiddleware, Adminmiddleware, RateLimit, adminRouter);
 router.use("/course", Usermiddleware, RateLimit, courseRouter);
 router.use("/payments", Usermiddleware, RateLimit, paymentRouter);
 

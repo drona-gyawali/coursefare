@@ -90,10 +90,7 @@ class CourseContentRepo {
 
       if (courseId) {
         const totalItems = await this.model.countDocuments({ courseId });
-        const course = await this.model
-          .find({ courseId }, { __v: 0 })
-          .skip(skip)
-          .limit(limit);
+        const course = await this.model.find({ courseId }, { __v: 0 }).skip(skip).limit(limit);
 
         if (course.length === 0) throw new Error("Course not found");
 

@@ -14,7 +14,7 @@ router.post("/register", RateLimiterMiddleware.rateLimiter, async (req, res) => 
   return res.status(201).json({ status: 201, message: "User registered successfully" });
 });
 
-router.post("/login", RateLimiterMiddleware.rateLimiter ,async (req, res) => {
+router.post("/login", RateLimiterMiddleware.rateLimiter, async (req, res) => {
   const { email, password } = req.body;
   const loggedUser = await authService.Login(req, res, email, password);
   if (!loggedUser) {
@@ -23,7 +23,7 @@ router.post("/login", RateLimiterMiddleware.rateLimiter ,async (req, res) => {
   return res.status(200).json({ status: 200, tokens: loggedUser });
 });
 
-router.post("/refresh", RateLimiterMiddleware.rateLimiter ,(req, res) => {
+router.post("/refresh", RateLimiterMiddleware.rateLimiter, (req, res) => {
   const token = req.body.token;
   if (!token) {
     return res.status(400).json({ status: 400, message: "invalid token given" });
@@ -35,7 +35,6 @@ router.post("/refresh", RateLimiterMiddleware.rateLimiter ,(req, res) => {
   return res.status(200).json({ status: 200, refresh_token: refreshToken });
 });
 
-
 router.post("/profile", Usermiddleware, async (req, res) => {
   const userdata = await authService.profile(req);
   if (!userdata) {
@@ -44,8 +43,7 @@ router.post("/profile", Usermiddleware, async (req, res) => {
   return res.status(200).json({ status: 200, data: userdata });
 });
 
-
-router.get("/courses", RateLimiterMiddleware.rateLimiter , async (req, res) => {
+router.get("/courses", RateLimiterMiddleware.rateLimiter, async (req, res) => {
   try {
     const { limit = "10", page = "1" } = req.query;
     const getCourses = await courseService.getAllCourseGlobal(parseInt(limit), parseInt(page));

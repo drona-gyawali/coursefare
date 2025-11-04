@@ -68,7 +68,7 @@ class ContentService {
     }
   }
 
- async getCourseContent(req, courseId, page, limit) {
+  async getCourseContent(req, courseId, page, limit) {
     try {
       const userId = req.user.userId;
       const key = `courseContent:${courseId}-${userId}`;
@@ -94,7 +94,6 @@ class ContentService {
       return { success: false, message: error.message || error };
     }
   }
-
 }
 
 export const contentService = new ContentService();

@@ -107,3 +107,8 @@ export async function CourseContentOwnerShip(userId, courseId) {
     throw new Error(error);
   }
 }
+
+export function constructFileUrl(key) {
+  const Objecturl = `"${env.getObejctEndpointBucket}${env.getBucketName}/${key}"`;
+  return Objecturl.toString();
+}
