@@ -4,11 +4,14 @@ import adminRouter from "../controller/AdminController.js";
 import { Usermiddleware, Adminmiddleware } from "../middleware/AuthMiddleware.js";
 import courseRouter from "../controller/CourseController.js";
 import paymentRouter from "../controller/PaymentController.js";
+import RateLimiterMiddleware from "../middleware/RateLimiterMiddleware.js";
+
 const router = Router();
+const RateLimit = RateLimiterMiddleware.rateLimiterUser
 
 router.use("/user", userRouter);
-router.use("/admin", Usermiddleware, Adminmiddleware, adminRouter);
-router.use("/course", Usermiddleware, courseRouter);
-router.use("/payments", Usermiddleware, paymentRouter);
+router.use("/admin", Usermiddleware, Adminmiddleware, RateLimit , adminRouter);
+router.use("/course", Usermiddleware, RateLimit, courseRouter);
+router.use("/payments", Usermiddleware, RateLimit, paymentRouter);
 
 export default router;

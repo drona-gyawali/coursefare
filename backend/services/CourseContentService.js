@@ -68,7 +68,7 @@ class ContentService {
     }
   }
 
-  async getCourseContent(req, courseId) {
+ async getCourseContent(req, courseId, page, limit) {
     try {
       const userId = req.user.userId;
       const key = `courseContent:${courseId}-${userId}`;
@@ -76,12 +76,13 @@ class ContentService {
       const cached = await RedisService.getCache(key);
       if (cached) return { ...cached, cached: true };
 
-      const fetchCourse = await courseContentRepo.getCourseContent(courseId);
-      if (!fetchCourse || fetchCourse.length === 0) {
+      const fetchCourse = await courseContentRepo.getCourseContent(courseId, page, limit);
+
+      if (!fetchCourse || !fetchCourse.course || fetchCourse.course.length === 0) {
         return { success: false, message: "Course content not found" };
       }
 
-      const requiresPayment = fetchCourse.every((content) => !content.isPreview);
+      const requiresPayment = fetchCourse.course.every((content) => !content.isPreview);
       if (requiresPayment) {
         const isPaid = await paymentRepo.hasUserPaidForCourse(userId, courseId);
         if (!isPaid) return { success: false, message: "Premium course access denied" };
@@ -93,6 +94,7 @@ class ContentService {
       return { success: false, message: error.message || error };
     }
   }
+
 }
 
 export const contentService = new ContentService();

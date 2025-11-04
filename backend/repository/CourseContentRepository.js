@@ -84,15 +84,26 @@ class CourseContentRepo {
     }
   }
 
-  async getCourseContent(courseId = null) {
+  async getCourseContent(courseId = null, page = 1, limit = 10) {
     try {
+      const skip = (page - 1) * limit;
+
       if (courseId) {
-        const course = await CourseContent.find({ courseId: courseId });
-        if (!course) throw new Error("Course not found");
-        return course;
+        const totalItems = await this.model.countDocuments({ courseId });
+        const course = await this.model
+          .find({ courseId }, { __v: 0 })
+          .skip(skip)
+          .limit(limit);
+
+        if (course.length === 0) throw new Error("Course not found");
+
+        const totalPages = Math.ceil(totalItems / limit);
+        return { course, page, limit, totalItems, totalPages };
       } else {
-        const courses = await CourseContent.find();
-        return courses;
+        const totalItems = await this.model.countDocuments();
+        const courses = await this.model.find({}, { __v: 0 }).skip(skip).limit(limit);
+        const totalPages = Math.ceil(totalItems / limit);
+        return { courses, page, limit, totalItems, totalPages };
       }
     } catch (err) {
       throw new Error(`Fetch failed: ${err.message}`);

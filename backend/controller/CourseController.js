@@ -67,8 +67,10 @@ router.get("/courses", async (req, res) => {
 
 router.get("/course/content/:id", async (req, res) => {
   try {
+    const {page = 1, limit = 10} = req.query
+    if(limit > 100) return res.status(400).json({status:400, error: "total limits exceded"})
     const { id } = req.params;
-    const contentCourse = await contentService.getCourseContent(req, id.toString());
+    const contentCourse = await contentService.getCourseContent(req, id.toString(), page, limit);
     if (!contentCourse) {
       return res.status(400).json({ success: false, error: "unable to get the course content" });
     }
