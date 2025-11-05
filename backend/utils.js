@@ -4,6 +4,7 @@ import { env } from "./core/conf.js";
 import RedisService from "./services/RedisService.js";
 import { initDb } from "./core/database.js";
 import { courseRepo } from "./repository/CourseRepository.js";
+import WorkerService from "./WorkerService.js";
 
 export function generateRandomString() {
   return Math.random().toString(36).substring(2, 6);
@@ -111,4 +112,15 @@ export async function CourseContentOwnerShip(userId, courseId) {
 export function constructFileUrl(key) {
   const Objecturl = `"${env.getObejctEndpointBucket}${env.getBucketName}/${key}"`;
   return Objecturl.toString();
+}
+
+export async function sendNotification(userId, message, type, link) {
+  const { notificationQueue } = WorkerService.getQueues();
+  await notificationQueue.add("notification", {
+    userId,
+    message,
+    type,
+    isRead: false,
+    link,
+  });
 }

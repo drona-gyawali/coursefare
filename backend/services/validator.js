@@ -44,3 +44,11 @@ export const CourseContentSchema = z.object({
   description: z.string().min(1).max(1000, "description shouldnot be more thatn > 1000"),
   isPreview: z.boolean().default(false),
 });
+
+export const NotificationSchema = z.object({
+  userId: z.string(),
+  message: z.string().min(1).max(500),
+  type: z.enum(["info", "alert", "warning", "casual"]),
+  isRead: z.boolean().default(false),
+  link: z.string().min(1).max(100),
+});

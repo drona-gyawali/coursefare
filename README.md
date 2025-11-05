@@ -27,6 +27,7 @@ This is a **Course Selling Backend** application built with Node.js and Express.
 - Email notification processing via background jobs with bullmq + redis
 - Ratelimiter to protect against resource starvation
 - Caching to make Apis response blazing fast
+- Real Time Notification of events using SSE(SERVER SIDE EVENT)
 ---
 
 ### Install Packages

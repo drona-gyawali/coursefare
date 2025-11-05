@@ -183,8 +183,42 @@ const PaymentSchema = new Schema(
   },
 );
 
+const NotificationSchema = new Schema(
+  {
+    userId: {
+      type: objectID,
+      ref: "User",
+      required: true,
+    },
+
+    message: {
+      type: String,
+      required: true,
+    },
+
+    type: {
+      type: String,
+      enum: ["info", "alert", "warning", "casual"],
+      default: "casual",
+    },
+
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
+
+    link: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
 export const User = mongoose.model("User", UserSchema);
 export const Course = mongoose.model("Course", CourseSchema);
 export const CourseContent = mongoose.model("CourseContent", CourseContentSchema);
 export const Purchase = mongoose.model("Purchase", PurchaseSchema);
 export const Payment = mongoose.model("Payment", PaymentSchema);
+export const Notification = mongoose.model("Notification", NotificationSchema);

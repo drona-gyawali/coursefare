@@ -8,7 +8,7 @@ import { userRepo } from "../repository/UserRepository.js";
 import { courseRepo } from "../repository/CourseRepository.js";
 import { paymentSuccessTemplate } from "../templates/paymentSucess.template.js";
 import { purchaseService } from "./PurschaseService.js";
-import { truncateWords } from "../utils.js";
+import { truncateWords, sendNotification } from "../utils.js";
 
 class StripeService {
   static instance;
@@ -87,7 +87,7 @@ class StripeService {
             transactionId: updatedPayment.transactionId,
           }),
         });
-
+        await sendNotification(updatedPayment.userId, "Payment Successful", "info", "#");
         return res.status(200).json({
           success: true,
           message: "Payment succeeded and course access granted automatically",

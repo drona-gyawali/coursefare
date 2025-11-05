@@ -1,12 +1,19 @@
-// TODO: MIGRATE THIS MODULE TO SERVER.JS
-
 import express from "express";
-import { env } from "./backend/core/conf.js";
+import { env } from "./conf.js";
 import cookieParser from "cookie-parser";
-import routes from "./backend/routes/index.js";
-import { starter } from "./backend/utils.js";
+import routes from "../routes/index.js";
+import { starter } from "../utils.js";
+import cors from "cors";
 
 const app = express();
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 app.use(cookieParser());
 
