@@ -3,8 +3,10 @@ import { CourseContentSchema } from "./validator.js";
 import { paymentRepo } from "../repository/PaymentRepository.js";
 import RedisService from "./RedisService.js";
 import { CourseContentOwnerShip } from "../utils.js";
-
+import { sendNotification, sendEmail, coursePurchasedEmails } from "../utils.js";
 import { ZodError } from "zod";
+import { courseContentTemplate } from "../templates/coursecontent.template.js";
+import { CourseContent } from "../core/schema.js";
 
 class ContentService {
   async contentCreate(req, courseId, section, title, contentType, fileUrl, description, isPreview) {
@@ -13,8 +15,8 @@ class ContentService {
         return { success: false, message: "User not authenticated" };
       }
 
-      const verifiedUser = await CourseContentOwnerShip(req.user.userId, courseId.toString());
-      if (!verifiedUser) return { success: false, message: "You are not owner of this course" };
+      const { success, data } = await CourseContentOwnerShip(req.user.userId, courseId.toString());
+      if (!success) return { success: false, message: "You are not owner of this course" };
 
       const validatedData = CourseContentSchema.parse({
         courseId,
@@ -37,6 +39,26 @@ class ContentService {
       );
 
       if (!contentCreated) return { success: false, message: "Course content creation failed" };
+      console.log(courseId);
+      const users = await coursePurchasedEmails(courseId);
+      await Promise.all([
+        ...users.map(({ email }) =>
+          sendEmail(
+            email,
+            `CourseFare: ${data.title} has added new Content`,
+            courseContentTemplate(
+              contentCreated.title,
+              data.title,
+              contentCreated.fileUrl,
+              contentCreated.contentType,
+              "addded",
+            ),
+          ),
+        ),
+        ...users.map(({ userId }) =>
+          sendNotification(userId, `CourseFare: ${data.title} has added new Content`, "info", "#"),
+        ),
+      ]);
       await RedisService.delCache(`courseContent:${courseId}*`);
       return { success: true, data: contentCreated };
     } catch (error) {
@@ -47,24 +69,51 @@ class ContentService {
     }
   }
 
-  async updateContent(req, courseId, updatedData) {
+  async updateContent(req, contentId, updatedData) {
     try {
       if (!req.user || !req.user.userId) {
         return { success: false, message: "User not authenticated" };
       }
 
-      const verifiedUser = await CourseContentOwnerShip(req.user.userId, courseId);
-      if (!verifiedUser) return { success: false, message: "You are not owner of this course" };
+      const CourseDetails = await CourseContent.findById(contentId.toString());
+      if (!CourseDetails) return { success: false, message: "No course Available" };
+      const { success, data } = await CourseContentOwnerShip(
+        req.user.userId,
+        CourseDetails.courseId.toString(),
+      );
+      if (!success) return { success: false, message: "You are not owner of this course" };
 
       const updatedContent = await courseContentRepo.updateCourseContent(
-        courseId.toString(),
+        contentId.toString(),
         updatedData,
       );
       if (!updatedContent) return { success: false, message: "Update failed" };
 
-      await RedisService.delCache(`courseContent:${courseId}*`);
+      const users = await coursePurchasedEmails(CourseDetails.courseId.toString());
+
+      await Promise.all([
+        ...users.map(({ email }) =>
+          sendEmail(
+            email,
+            "CourseFare: Course has updated Content",
+            courseContentTemplate(
+              updatedContent.title,
+              data.title,
+              updatedContent.fileUrl,
+              updatedContent.contentType,
+              "updated",
+            ),
+          ),
+        ),
+        ...users.map(({ userId }) =>
+          sendNotification(userId, "CourseFare: Course has been updated", "info", "#"),
+        ),
+      ]);
+
+      await RedisService.delCache(`courseContent:${CourseDetails.courseId.toString()}*`);
       return { success: true, data: updatedContent };
     } catch (error) {
+      console.log(error);
       return { success: false, message: error.message || error };
     }
   }

@@ -101,14 +101,14 @@ router.post("/create/course/content/:courseId", async (req, res) => {
   }
 });
 
-router.put("/update/course/content/:courseId", async (req, res) => {
+router.put("/update/course/content/:contentId", async (req, res) => {
   try {
-    const { courseId } = req.params;
-    if (!courseId) {
+    const { contentId } = req.params;
+    if (!contentId) {
       return res.status(400).json({ status: 400, error: "id param missing" });
     }
 
-    const updatedCourse = await contentService.updateContent(req, courseId, req.body);
+    const updatedCourse = await contentService.updateContent(req, contentId, req.body);
 
     if (!updatedCourse.success) {
       return res.status(400).json({ status: 400, error: updatedCourse.message });

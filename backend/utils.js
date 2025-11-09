@@ -5,6 +5,9 @@ import RedisService from "./services/RedisService.js";
 import { initDb } from "./core/database.js";
 import { courseRepo } from "./repository/CourseRepository.js";
 import WorkerService from "./WorkerService.js";
+import { Purchase } from "./core/schema.js";
+import { userRepo } from "./repository/UserRepository.js";
+import mongoose from "mongoose";
 
 export function generateRandomString() {
   return Math.random().toString(36).substring(2, 6);
@@ -100,9 +103,9 @@ export async function CourseContentOwnerShip(userId, courseId) {
   try {
     const verifiedOwner = await courseRepo.getCoursebyId(courseId);
     if (!verifiedOwner.creator === userId.toString()) {
-      return false;
+      return { success: false, data: "Not authorized user" };
     }
-    return true;
+    return { success: true, data: verifiedOwner };
   } catch (error) {
     console.log(error);
     throw new Error(error);
@@ -123,4 +126,41 @@ export async function sendNotification(userId, message, type, link) {
     isRead: false,
     link,
   });
+}
+
+export async function sendEmail(email, subject, template) {
+  const { emailQueue } = WorkerService.getQueues();
+  await emailQueue.add("SendEmail", {
+    to: email,
+    subject: subject,
+    template: template,
+  });
+}
+
+export async function coursePurchasedEmails(courseId) {
+  const purchases = await Purchase.find({
+    courseId: new mongoose.Types.ObjectId(courseId),
+  });
+
+  if (!purchases || purchases.length === 0) {
+    return [];
+  }
+
+  const userDataPromises = purchases.map(async (p) => {
+    if (p.userId) {
+      const userdetails = await userRepo.getUserbyId(p.userId.toString());
+      if (userdetails?.email) {
+        return {
+          userId: p.userId.toString(),
+          email: userdetails.email,
+        };
+      }
+    }
+    return null;
+  });
+
+  const userData = await Promise.all(userDataPromises);
+  const filteredData = userData.filter(Boolean);
+
+  return filteredData;
 }

@@ -38,7 +38,7 @@ class CourseContentRepo {
     }
   }
 
-  async updateCourseContent(courseId, updateData) {
+  async updateCourseContent(contentId, updateData) {
     try {
       const allowedUpdates = [
         "section",
@@ -54,16 +54,15 @@ class CourseContentRepo {
           updates[key] = updateData[key];
         }
       });
-      console.log(courseId);
       if (Object.keys(updates).length === 0) {
         throw new Error("No valid fields to update");
       }
+
       const updatedCourse = await CourseContent.findOneAndUpdate(
-        { courseId: courseId.toString() },
+        { _id: contentId.toString() },
         { $set: updates },
         { new: true, runValidators: true },
       );
-      console.log(updatedCourse);
       if (!updatedCourse) {
         throw new Error("Course not found");
       }

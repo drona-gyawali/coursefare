@@ -1,7 +1,6 @@
 import { env } from "../core/conf.js";
 import nodemailer from "nodemailer";
 
-// TODO: need to define workers for this
 class EmailService {
   static instance;
   constructor() {

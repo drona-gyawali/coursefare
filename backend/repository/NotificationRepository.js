@@ -40,20 +40,20 @@ class NotificationRepo {
       if (!fetchNotified) {
         throw new Error("No notification available");
       }
-      const readNotification = [];
-      const notReadNotification = [];
+      const read = [];
+      const unread = [];
       fetchNotified.map((notify) => {
         if (notify.isRead) {
-          readNotification.push(notify);
+          read.push(notify);
         }
 
         if (!notify.isRead) {
-          notReadNotification.push(notify);
+          unread.push(notify);
         }
       });
       return {
-        readNotification,
-        notReadNotification,
+        read,
+        unread,
         pagination: {
           page,
           limit,
